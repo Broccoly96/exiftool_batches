@@ -16,10 +16,16 @@ $csvReport = Join-Path $scriptDir "date_report.csv"
 if (-not [string]::IsNullOrEmpty($ExifToolPath)) {
   $exifTool = $ExifToolPath
 } else {
-  $localExifTool = Join-Path $scriptDir "exiftool-13.33_64\exiftool.exe"
-  if (Test-Path -LiteralPath $localExifTool) {
-    $exifTool = $localExifTool
-    Write-Verbose "Found exiftool at: $exifTool"
+  $exifToolDir = Get-ChildItem -Path $scriptDir -Directory -Filter "exiftool*" | Select-Object -First 1
+  if ($exifToolDir) {
+    $localExifTool = Join-Path $exifToolDir.FullName "exiftool.exe"
+    if (Test-Path -LiteralPath $localExifTool) {
+      $exifTool = $localExifTool
+      Write-Verbose "Found exiftool at: $exifTool"
+    } else {
+      $exifTool = "exiftool.exe"
+      Write-Verbose "Using exiftool from PATH."
+    }
   } else {
     $exifTool = "exiftool.exe"
     Write-Verbose "Using exiftool from PATH."
